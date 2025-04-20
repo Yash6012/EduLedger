@@ -1,0 +1,1343 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Portal - EduLedger</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #4a90e2;
+            --secondary-color: #2c3e50;
+            --accent-color: #e74c3c;
+            --success-color: #27ae60;
+            --warning-color: #f39c12;
+            --background-color: #f8f9fa;
+            --card-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            --gradient-primary: linear-gradient(135deg, #4a90e2 0%, #357abd 100%);
+            --gradient-secondary: linear-gradient(135deg, #2c3e50 0%, #1a252f 100%);
+            --gradient-accent: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, 
+                #ffd6e7 0%, 
+                #d6f3ff 50%, 
+                #d6ffe8 100%
+            );
+            min-height: 100vh;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                radial-gradient(circle at 20% 20%, rgba(255, 214, 231, 0.3) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(214, 243, 255, 0.3) 0%, transparent 50%),
+                radial-gradient(circle at 50% 50%, rgba(214, 255, 232, 0.3) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .navbar {
+            background: var(--gradient-secondary);
+            color: white;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            position: relative;
+            z-index: 1;
+        }
+
+        .navbar-brand {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .navbar-brand h1 {
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+
+        .navbar-actions {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .action-button {
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .export-button {
+            background: var(--gradient-primary);
+            color: white;
+        }
+
+        .logout-button {
+            background: var(--gradient-accent);
+            color: white;
+        }
+
+        .action-button:hover {
+            opacity: 0.9;
+            transform: translateY(-2px);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+        }
+
+        .stats-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 1.5rem;
+            border-radius: 15px;
+            box-shadow: var(--card-shadow);
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            transition: transform 0.3s, box-shadow 0.3s;
+            backdrop-filter: blur(10px);
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        }
+
+        .stat-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+
+        .stat-icon.students {
+            background: rgba(52, 152, 219, 0.1);
+            color: var(--primary-color);
+        }
+
+        .stat-icon.faculty {
+            background: rgba(46, 204, 113, 0.1);
+            color: var(--success-color);
+        }
+
+        .stat-icon.subjects {
+            background: rgba(241, 196, 15, 0.1);
+            color: var(--warning-color);
+        }
+
+        .stat-info h3 {
+            font-size: 1.2rem;
+            color: var(--secondary-color);
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-info p {
+            font-size: 2rem;
+            font-weight: 600;
+            color: var(--secondary-color);
+        }
+
+        .tabs {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 2rem;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .tab-button {
+            padding: 1rem 2rem;
+            background: rgba(255, 255, 255, 0.95);
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: all 0.3s;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            backdrop-filter: blur(10px);
+        }
+
+        .tab-button:hover {
+            background: var(--gradient-primary);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(74, 144, 226, 0.3);
+        }
+
+        .tab-button.active {
+            background: var(--gradient-primary);
+            color: white;
+            box-shadow: 0 4px 15px rgba(74, 144, 226, 0.3);
+        }
+
+        .tab-content {
+            display: none;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: var(--card-shadow);
+            animation: fadeIn 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--secondary-color);
+            font-weight: 500;
+        }
+
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 0.8rem;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+
+        .form-group input:focus, .form-group select:focus {
+            outline: none;
+            border-color: var(--primary-color);
+        }
+
+        .submit-button {
+            background: var(--gradient-primary);
+            color: white;
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            box-shadow: 0 4px 15px rgba(74, 144, 226, 0.3);
+        }
+
+        .submit-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(74, 144, 226, 0.4);
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            margin-top: 1rem;
+            overflow-x: auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            box-shadow: var(--card-shadow);
+        }
+
+        .data-table th {
+            background: var(--gradient-primary);
+            color: white;
+            position: sticky;
+            top: 0;
+            padding: 1rem;
+            text-align: left;
+        }
+
+        .data-table td {
+            padding: 1rem;
+            border-bottom: 1px solid rgba(0,0,0,0.1);
+        }
+
+        .data-table tr:hover {
+            background: rgba(74, 144, 226, 0.05);
+        }
+
+        .search-container {
+            position: relative;
+            margin-bottom: 1rem;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 0.8rem;
+            padding-left: 2.5rem;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 1rem;
+            transition: all 0.3s;
+        }
+
+        .search-input:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #666;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 8px;
+        }
+
+        .action-button {
+            padding: 6px 12px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background-color 0.3s;
+        }
+
+        .edit-button {
+            background-color: #4CAF50;
+            color: white;
+        }
+
+        .edit-button:hover {
+            background-color: #45a049;
+        }
+
+        .delete-button {
+            background-color: #f44336;
+            color: white;
+        }
+
+        .delete-button:hover {
+            background-color: #da190b;
+        }
+
+        .status-badge {
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        .status-active {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status-completed {
+            background: #e2e3e5;
+            color: #383d41;
+        }
+
+        .status-upcoming {
+            background: #cce5ff;
+            color: #004085;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 2rem;
+            display: none;
+        }
+
+        .loading i {
+            font-size: 2rem;
+            color: var(--primary-color);
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: var(--card-shadow);
+            max-width: 500px;
+            width: 90%;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .modal-title {
+            font-size: 1.5rem;
+            color: var(--secondary-color);
+        }
+
+        .modal-buttons {
+            display: flex;
+            justify-content: flex-end;
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        .modal-button {
+            padding: 0.5rem 1.5rem;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: all 0.3s;
+        }
+
+        .modal-button.confirm {
+            background: var(--accent-color);
+            color: white;
+        }
+
+        .modal-button.cancel {
+            background: var(--secondary-color);
+            color: white;
+        }
+
+        .close-button {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--secondary-color);
+        }
+
+        .profile-view {
+            display: none;
+            background: white;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: var(--card-shadow);
+            margin-top: 1rem;
+        }
+
+        .profile-header {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .profile-avatar {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background: var(--primary-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5rem;
+            color: white;
+        }
+
+        .profile-info h2 {
+            color: var(--secondary-color);
+            margin-bottom: 0.5rem;
+        }
+
+        .profile-info p {
+            color: #666;
+        }
+
+        .profile-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .detail-item {
+            background-color: #f9f9f9;
+            padding: 15px;
+            border-radius: 6px;
+        }
+
+        .detail-item h3 {
+            margin-top: 0;
+            color: #333;
+            border-bottom: 2px solid #ddd;
+            padding-bottom: 10px;
+        }
+
+        .detail-item p {
+            margin: 8px 0;
+            color: #666;
+        }
+
+        @media (max-width: 768px) {
+            .navbar {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .stats-container {
+                grid-template-columns: 1fr;
+            }
+
+            .tab-button {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .data-table {
+                display: block;
+                overflow-x: auto;
+            }
+        }
+
+        .message {
+            padding: 1rem;
+            margin: 1rem 0;
+            border-radius: 5px;
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+        .success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="navbar-brand">
+            <i class="fas fa-university"></i>
+            <h1>EduLedger Admin</h1>
+        </div>
+        <div class="navbar-actions">
+            <button class="action-button export-button" onclick="exportData()">
+                <i class="fas fa-download"></i>
+                Export Data
+            </button>
+            <button class="action-button logout-button" onclick="logout()">
+                <i class="fas fa-sign-out-alt"></i>
+                Logout
+            </button>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="stats-container">
+            <div class="stat-card">
+                <div class="stat-icon students">
+                    <i class="fas fa-user-graduate"></i>
+                </div>
+                <div class="stat-info">
+                    <h3>Total Students</h3>
+                    <p id="totalStudents">0</p>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon faculty">
+                    <i class="fas fa-chalkboard-teacher"></i>
+                </div>
+                <div class="stat-info">
+                    <h3>Total Faculty</h3>
+                    <p id="totalFaculty">0</p>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon subjects">
+                    <i class="fas fa-book"></i>
+                </div>
+                <div class="stat-info">
+                    <h3>Active Assignments</h3>
+                    <p id="totalAssignments">0</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="tabs">
+            <button class="tab-button active" onclick="showTab('addStudent')">
+                <i class="fas fa-user-plus"></i>
+                Add Student
+            </button>
+            <button class="tab-button" onclick="showTab('addFaculty')">
+                <i class="fas fa-user-tie"></i>
+                Add Faculty
+            </button>
+            <button class="tab-button" onclick="showTab('assignFaculty')">
+                <i class="fas fa-tasks"></i>
+                Assign Faculty
+            </button>
+            <button class="tab-button" onclick="showTab('viewData')">
+                <i class="fas fa-database"></i>
+                View Data
+            </button>
+        </div>
+
+        <div id="addStudent" class="tab-content active">
+            <h2>Add New Student</h2>
+            <form id="studentForm">
+                <div class="form-group">
+                    <label for="studentName">Name</label>
+                    <input type="text" id="studentName" required>
+                </div>
+                <div class="form-group">
+                    <label for="studentId">Unique ID</label>
+                    <input type="text" id="studentId" required>
+                </div>
+                <div class="form-group">
+                    <label for="studentEmail">Email</label>
+                    <input type="email" id="studentEmail" required>
+                </div>
+                <div class="form-group">
+                    <label for="studentBranch">Branch</label>
+                    <input type="text" id="studentBranch" required>
+                </div>
+                <div class="form-group">
+                    <label for="studentYear">Year</label>
+                    <input type="number" id="studentYear" required>
+                </div>
+                <button type="submit" class="submit-button">Add Student</button>
+            </form>
+            <div id="studentMessage" class="message"></div>
+        </div>
+
+        <div id="addFaculty" class="tab-content">
+            <h2>Add New Faculty</h2>
+            <form id="facultyForm">
+                <div class="form-group">
+                    <label for="facultyName">Name</label>
+                    <input type="text" id="facultyName" required>
+                </div>
+                <div class="form-group">
+                    <label for="facultyId">Unique ID</label>
+                    <input type="text" id="facultyId" required>
+                </div>
+                <div class="form-group">
+                    <label for="facultyEmail">Email</label>
+                    <input type="email" id="facultyEmail" required>
+                </div>
+                <div class="form-group">
+                    <label for="facultyResearch">Research Area</label>
+                    <input type="text" id="facultyResearch" required>
+                </div>
+                <div class="form-group">
+                    <label for="facultyPost">Post</label>
+                    <input type="text" id="facultyPost" required>
+                </div>
+                <button type="submit" class="submit-button">Add Faculty</button>
+            </form>
+            <div id="facultyMessage" class="message"></div>
+        </div>
+
+        <div id="assignFaculty" class="tab-content">
+            <h2>Assign Faculty to Student</h2>
+            <form id="assignmentForm">
+                <div class="form-group">
+                    <label for="studentSelect">Student</label>
+                    <select id="studentSelect" required></select>
+                </div>
+                <div class="form-group">
+                    <label for="facultySelect">Faculty</label>
+                    <select id="facultySelect" required></select>
+                </div>
+                <div class="form-group">
+                    <label for="subjectSelect">Subject</label>
+                    <select id="subjectSelect" required></select>
+                </div>
+                <div class="form-group">
+                    <label for="startDate">Start Date</label>
+                    <input type="date" id="startDate" required>
+                </div>
+                <div class="form-group">
+                    <label for="endDate">End Date</label>
+                    <input type="date" id="endDate" required>
+                </div>
+                <button type="submit" class="submit-button">Assign Faculty</button>
+            </form>
+            <div id="assignmentMessage" class="message"></div>
+        </div>
+
+        <div id="viewData" class="tab-content">
+            <h2>View Data</h2>
+            <div class="tabs">
+                <button class="tab-button active" onclick="showDataTab('students')">Students</button>
+                <button class="tab-button" onclick="showDataTab('faculty')">Faculty</button>
+                <button class="tab-button" onclick="showDataTab('subjects')">Assigned Subjects</button>
+            </div>
+            <div id="studentsData" class="data-content">
+                <div class="search-container">
+                    <input type="text" id="studentSearch" placeholder="Search students..." class="search-input">
+                    <i class="fas fa-search search-icon"></i>
+                </div>
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>ID</th>
+                            <th>Email</th>
+                            <th>Branch</th>
+                            <th>Year</th>
+                        </tr>
+                    </thead>
+                    <tbody id="studentsTableBody"></tbody>
+                </table>
+            </div>
+            <div id="facultyData" class="data-content" style="display: none;">
+                <div class="search-container">
+                    <input type="text" id="facultySearch" placeholder="Search faculty..." class="search-input">
+                    <i class="fas fa-search search-icon"></i>
+                </div>
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>ID</th>
+                            <th>Email</th>
+                            <th>Research Area</th>
+                            <th>Post</th>
+                        </tr>
+                    </thead>
+                    <tbody id="facultyTableBody"></tbody>
+                </table>
+            </div>
+            <div id="subjectsData" class="data-content" style="display: none;">
+                <div class="search-container">
+                    <input type="text" id="subjectSearch" placeholder="Search assignments..." class="search-input">
+                    <i class="fas fa-search search-icon"></i>
+                </div>
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Student</th>
+                            <th>Faculty</th>
+                            <th>Subject</th>
+                            <th>Start Date</th>
+                            <th>End Date</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="subjectsTableBody"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal for confirmations -->
+    <div id="confirmModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Confirm Action</h2>
+                <button class="close-button" onclick="closeModal()">&times;</button>
+            </div>
+            <p id="modalMessage">Are you sure you want to perform this action?</p>
+            <div class="modal-footer">
+                <button class="action-button cancel-button" onclick="closeModal()">Cancel</button>
+                <button class="action-button confirm-button" onclick="confirmAction()">Confirm</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE_URL = 'http://localhost:3000/api';
+
+        function showTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            document.querySelectorAll('.tab-button').forEach(button => {
+                button.classList.remove('active');
+            });
+            document.getElementById(tabId).classList.add('active');
+            document.querySelector(`button[onclick="showTab('${tabId}')"]`).classList.add('active');
+        }
+
+        function showDataTab(tabId) {
+            document.querySelectorAll('.data-content').forEach(tab => {
+                tab.style.display = 'none';
+            });
+            document.querySelectorAll('.tab-button').forEach(button => {
+                button.classList.remove('active');
+            });
+            document.getElementById(`${tabId}Data`).style.display = 'block';
+            document.querySelector(`button[onclick="showDataTab('${tabId}')"]`).classList.add('active');
+        }
+
+        // Load data when page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            loadStudents();
+            loadFaculty();
+            loadSubjects();
+            loadAssignments();
+            updateStats();
+        });
+
+        // Student form submission
+        document.getElementById('studentForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const studentData = {
+                name: document.getElementById('studentName').value,
+                unique_id: document.getElementById('studentId').value,
+                email: document.getElementById('studentEmail').value,
+                branch: document.getElementById('studentBranch').value,
+                year: parseInt(document.getElementById('studentYear').value)
+            };
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/add_student`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(studentData)
+                });
+
+                const result = await response.json();
+                showMessage('studentMessage', result.success, result.message);
+                
+                if (result.success) {
+                    loadStudents();
+                    document.getElementById('studentForm').reset();
+                }
+            } catch (error) {
+                showMessage('studentMessage', false, 'Error connecting to server');
+            }
+        });
+
+        // Faculty form submission
+        document.getElementById('facultyForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const facultyData = {
+                name: document.getElementById('facultyName').value,
+                unique_id: document.getElementById('facultyId').value,
+                email: document.getElementById('facultyEmail').value,
+                research_area: document.getElementById('facultyResearch').value,
+                post: document.getElementById('facultyPost').value
+            };
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/add_faculty`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(facultyData)
+                });
+
+                const result = await response.json();
+                showMessage('facultyMessage', result.success, result.message);
+                if (result.success) {
+                    loadFaculty();
+                    document.getElementById('facultyForm').reset();
+                }
+            } catch (error) {
+                showMessage('facultyMessage', false, 'Error adding faculty');
+            }
+        });
+
+        // Add error handling for fetch requests
+        async function fetchWithErrorHandling(url, options = {}) {
+            try {
+                const response = await fetch(url, {
+                    ...options,
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json',
+                        ...options.headers
+                    }
+                });
+
+                // Log response details
+                console.log('Response status:', response.status);
+                console.log('Response headers:', Object.fromEntries(response.headers.entries()));
+
+                // Check if the response is JSON
+                const contentType = response.headers.get('content-type');
+                if (!contentType || !contentType.includes('application/json')) {
+                    const text = await response.text();
+                    console.error('Non-JSON response:', text);
+                    throw new Error(`Expected JSON response but got ${contentType}`);
+                }
+
+                const data = await response.json();
+                
+                if (!response.ok) {
+                    throw new Error(data.message || 'Request failed');
+                }
+
+                return data;
+            } catch (error) {
+                console.error('Fetch error:', error);
+                throw error;
+            }
+        }
+
+        // Update the assignment form submission
+        document.getElementById('assignmentForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const studentId = document.getElementById('studentSelect').value;
+            const facultyId = document.getElementById('facultySelect').value;
+            const subjectId = document.getElementById('subjectSelect').value;
+            const startDate = document.getElementById('startDate').value;
+            const endDate = document.getElementById('endDate').value;
+
+            if (!studentId || !facultyId || !subjectId || !startDate || !endDate) {
+                showMessage('assignmentMessage', false, 'Please fill in all fields');
+                return;
+            }
+
+            const assignmentData = {
+                student_id: parseInt(studentId),
+                faculty_id: parseInt(facultyId),
+                subject_id: parseInt(subjectId),
+                start_date: startDate,
+                end_date: endDate
+            };
+
+            try {
+                console.log('Sending assignment request:', assignmentData);
+                const result = await fetchWithErrorHandling(`${API_BASE_URL}/assign_faculty`, {
+                    method: 'POST',
+                    body: JSON.stringify(assignmentData)
+                });
+
+                showMessage('assignmentMessage', true, result.message);
+                loadAssignments();
+                document.getElementById('assignmentForm').reset();
+            } catch (error) {
+                console.error('Assignment error:', error);
+                showMessage('assignmentMessage', false, error.message);
+            }
+        });
+
+        // Update other fetch calls to use the new function
+        async function loadStudents() {
+            try {
+                const students = await fetchWithErrorHandling(`${API_BASE_URL}/get_students`);
+                const tbody = document.getElementById('studentsTableBody');
+                tbody.innerHTML = '';
+                students.forEach(student => {
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td>${student.name}</td>
+                        <td>${student.unique_id}</td>
+                        <td>${student.email}</td>
+                        <td>${student.branch}</td>
+                        <td>${student.year}</td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+
+                // Update student select options
+                const studentSelect = document.getElementById('studentSelect');
+                studentSelect.innerHTML = '';
+                students.forEach(student => {
+                    const option = document.createElement('option');
+                    option.value = student.id;
+                    option.textContent = `${student.name} (${student.unique_id})`;
+                    studentSelect.appendChild(option);
+                });
+
+                // Update total students count
+                document.getElementById('totalStudents').textContent = students.length;
+            } catch (error) {
+                console.error('Error loading students:', error);
+            }
+        }
+
+        async function loadFaculty() {
+            try {
+                const faculty = await fetchWithErrorHandling(`${API_BASE_URL}/get_faculty`);
+                const tbody = document.getElementById('facultyTableBody');
+                tbody.innerHTML = '';
+                faculty.forEach(faculty => {
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td>${faculty.name}</td>
+                        <td>${faculty.unique_id}</td>
+                        <td>${faculty.email}</td>
+                        <td>${faculty.research_area}</td>
+                        <td>${faculty.post}</td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+
+                // Update faculty select options
+                const facultySelect = document.getElementById('facultySelect');
+                facultySelect.innerHTML = '';
+                faculty.forEach(faculty => {
+                    const option = document.createElement('option');
+                    option.value = faculty.id;
+                    option.textContent = `${faculty.name} (${faculty.unique_id})`;
+                    facultySelect.appendChild(option);
+                });
+
+                // Update total faculty count
+                document.getElementById('totalFaculty').textContent = faculty.length;
+            } catch (error) {
+                console.error('Error loading faculty:', error);
+            }
+        }
+
+        async function loadSubjects() {
+            try {
+                const subjects = await fetchWithErrorHandling(`${API_BASE_URL}/get_subjects`);
+                console.log('Loaded subjects:', subjects);
+                
+                const subjectSelect = document.getElementById('subjectSelect');
+                subjectSelect.innerHTML = '';
+                
+                subjects.forEach(subject => {
+                    const option = document.createElement('option');
+                    option.value = subject.id;
+                    option.textContent = `${subject.name} (${subject.code}) - ${subject.credits} credits`;
+                    subjectSelect.appendChild(option);
+                });
+            } catch (error) {
+                console.error('Error loading subjects:', error);
+            }
+        }
+
+        async function loadAssignments() {
+            try {
+                const assignments = await fetchWithErrorHandling(`${API_BASE_URL}/get_assignments`);
+                console.log('Loaded assignments:', assignments);
+                
+                const tbody = document.getElementById('subjectsTableBody');
+                tbody.innerHTML = '';
+                
+                assignments.forEach(assignment => {
+                    const tr = document.createElement('tr');
+                    const status = getAssignmentStatus(assignment.start_date, assignment.end_date);
+                    tr.innerHTML = `
+                        <td>${assignment.student_name} (${assignment.student_id})</td>
+                        <td>${assignment.faculty_name} (${assignment.faculty_id})</td>
+                        <td>${assignment.subject_name} (${assignment.subject_code}) - ${assignment.subject_credits} credits</td>
+                        <td>${formatDate(assignment.start_date)}</td>
+                        <td>${formatDate(assignment.end_date)}</td>
+                        <td><span class="status-badge status-${status}">${status}</span></td>
+                        <td>
+                            <div class="action-buttons">
+                                <button class="action-button edit-button" onclick="viewAssignment(${assignment.id})">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                                <button class="action-button delete-button" onclick="deleteAssignment(${assignment.id})">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+                updateStats();
+            } catch (error) {
+                console.error('Error loading assignments:', error);
+            }
+        }
+
+        function getAssignmentStatus(startDate, endDate) {
+            const today = new Date();
+            const start = new Date(startDate);
+            const end = new Date(endDate);
+
+            if (today < start) return 'upcoming';
+            if (today > end) return 'completed';
+            return 'active';
+        }
+
+        function formatDate(dateString) {
+            const options = { year: 'numeric', month: 'short', day: 'numeric' };
+            return new Date(dateString).toLocaleDateString(undefined, options);
+        }
+
+        function editAssignment(id) {
+            // Implementation for editing assignment
+            console.log('Edit assignment:', id);
+        }
+
+        function viewAssignment(id) {
+            // Find the assignment in the table
+            const assignmentRow = document.querySelector(`#subjectsTableBody tr[data-id="${id}"]`);
+            if (!assignmentRow) return;
+
+            // Create a modal to display assignment details
+            const modal = document.createElement('div');
+            modal.className = 'modal';
+            modal.innerHTML = `
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h2 class="modal-title">Assignment Details</h2>
+                        <button class="close-button" onclick="this.parentElement.parentElement.parentElement.remove()">&times;</button>
+                    </div>
+                    <div class="profile-details">
+                        <div class="detail-item">
+                            <h3>Student Information</h3>
+                            <p>Name: ${assignmentRow.cells[0].textContent}</p>
+                            <p>Email: ${assignmentRow.cells[0].dataset.email}</p>
+                            <p>Branch: ${assignmentRow.cells[0].dataset.branch}</p>
+                            <p>Year: ${assignmentRow.cells[0].dataset.year}</p>
+                        </div>
+                        <div class="detail-item">
+                            <h3>Faculty Information</h3>
+                            <p>Name: ${assignmentRow.cells[1].textContent}</p>
+                            <p>Email: ${assignmentRow.cells[1].dataset.email}</p>
+                            <p>Research Area: ${assignmentRow.cells[1].dataset.research}</p>
+                            <p>Post: ${assignmentRow.cells[1].dataset.post}</p>
+                        </div>
+                        <div class="detail-item">
+                            <h3>Subject Information</h3>
+                            <p>Name: ${assignmentRow.cells[2].textContent}</p>
+                            <p>Credits: ${assignmentRow.cells[2].dataset.credits}</p>
+                            <p>Start Date: ${assignmentRow.cells[3].textContent}</p>
+                            <p>End Date: ${assignmentRow.cells[4].textContent}</p>
+                            <p>Status: ${assignmentRow.cells[5].textContent}</p>
+                        </div>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modal);
+        }
+
+        function deleteAssignment(id) {
+            showModal('Are you sure you want to delete this assignment?', async () => {
+                try {
+                    const response = await fetch(`${API_BASE_URL}/delete_assignment/${id}`, {
+                        method: 'DELETE'
+                    });
+                    const result = await response.json();
+                    if (result.success) {
+                        loadAssignments();
+                        showMessage('assignmentMessage', true, 'Assignment deleted successfully');
+                    } else {
+                        showMessage('assignmentMessage', false, 'Error deleting assignment');
+                    }
+                } catch (error) {
+                    showMessage('assignmentMessage', false, 'Error deleting assignment');
+                }
+            });
+        }
+
+        // Add search functionality
+        document.getElementById('studentSearch').addEventListener('input', (e) => {
+            const searchTerm = e.target.value.toLowerCase();
+            const rows = document.querySelectorAll('#studentsTableBody tr');
+            rows.forEach(row => {
+                const text = row.textContent.toLowerCase();
+                row.style.display = text.includes(searchTerm) ? '' : 'none';
+            });
+        });
+
+        document.getElementById('facultySearch').addEventListener('input', (e) => {
+            const searchTerm = e.target.value.toLowerCase();
+            const rows = document.querySelectorAll('#facultyTableBody tr');
+            rows.forEach(row => {
+                const text = row.textContent.toLowerCase();
+                row.style.display = text.includes(searchTerm) ? '' : 'none';
+            });
+        });
+
+        document.getElementById('subjectSearch').addEventListener('input', (e) => {
+            const searchTerm = e.target.value.toLowerCase();
+            const rows = document.querySelectorAll('#subjectsTableBody tr');
+            rows.forEach(row => {
+                const text = row.textContent.toLowerCase();
+                row.style.display = text.includes(searchTerm) ? '' : 'none';
+            });
+        });
+
+        function showMessage(elementId, success, message) {
+            const messageElement = document.getElementById(elementId);
+            messageElement.textContent = message;
+            messageElement.className = `message ${success ? 'success' : 'error'}`;
+            messageElement.style.display = 'block';
+            
+            // Scroll to the message
+            messageElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            
+            setTimeout(() => {
+                messageElement.style.display = 'none';
+            }, 3000);
+        }
+
+        // Add new functions for enhanced features
+        function updateStats() {
+            // Get counts from the actual data
+            const studentRows = document.querySelectorAll('#studentsTableBody tr');
+            const facultyRows = document.querySelectorAll('#facultyTableBody tr');
+            const assignmentRows = document.querySelectorAll('#subjectsTableBody tr');
+
+            document.getElementById('totalStudents').textContent = studentRows.length;
+            document.getElementById('totalFaculty').textContent = facultyRows.length;
+            document.getElementById('totalAssignments').textContent = assignmentRows.length;
+        }
+
+        function exportData() {
+            const data = {
+                students: Array.from(document.querySelectorAll('#studentsTableBody tr')).map(tr => ({
+                    name: tr.cells[0].textContent,
+                    id: tr.cells[1].textContent,
+                    email: tr.cells[2].textContent,
+                    branch: tr.cells[3].textContent,
+                    year: tr.cells[4].textContent
+                })),
+                faculty: Array.from(document.querySelectorAll('#facultyTableBody tr')).map(tr => ({
+                    name: tr.cells[0].textContent,
+                    id: tr.cells[1].textContent,
+                    email: tr.cells[2].textContent,
+                    research: tr.cells[3].textContent,
+                    post: tr.cells[4].textContent
+                })),
+                assignments: Array.from(document.querySelectorAll('#subjectsTableBody tr')).map(tr => ({
+                    student: tr.cells[0].textContent,
+                    faculty: tr.cells[1].textContent,
+                    subject: tr.cells[2].textContent,
+                    startDate: tr.cells[3].textContent,
+                    endDate: tr.cells[4].textContent,
+                    status: tr.cells[5].textContent
+                }))
+            };
+
+            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'eduledger-data.json';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+
+        function logout() {
+            window.location.href = '/admin-login';
+        }
+
+        function showModal(message, onConfirm) {
+            const modal = document.createElement('div');
+            modal.className = 'modal';
+            modal.innerHTML = `
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h2 class="modal-title">Confirm Action</h2>
+                        <button class="close-button" onclick="this.closest('.modal').remove()">&times;</button>
+                    </div>
+                    <p>${message}</p>
+                    <div class="modal-buttons">
+                        <button class="modal-button cancel" onclick="this.closest('.modal').remove()">Cancel</button>
+                        <button class="modal-button confirm" onclick="confirmModal(this)">Confirm</button>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modal);
+
+            // Store the onConfirm callback
+            modal.querySelector('.confirm').onclick = () => {
+                onConfirm();
+                modal.remove();
+            };
+        }
+
+        function closeModal() {
+            document.getElementById('confirmModal').style.display = 'none';
+        }
+
+        function confirmAction() {
+            window.confirmAction();
+            closeModal();
+        }
+
+        // Add new function for viewing student profile
+        function viewStudentProfile(id) {
+            // Implementation for viewing student profile
+            console.log('View student profile:', id);
+        }
+
+        // Add new function for deleting student
+        function deleteStudent(id) {
+            showModal('Are you sure you want to delete this student?', async () => {
+                try {
+                    const response = await fetch(`${API_BASE_URL}/delete_student/${id}`, {
+                        method: 'DELETE'
+                    });
+                    const result = await response.json();
+                    if (result.success) {
+                        loadStudents();
+                        showMessage('studentMessage', true, 'Student deleted successfully');
+                    } else {
+                        showMessage('studentMessage', false, 'Error deleting student');
+                    }
+                } catch (error) {
+                    showMessage('studentMessage', false, 'Error deleting student');
+                }
+            });
+        }
+    </script>
+</body>
+</html> 

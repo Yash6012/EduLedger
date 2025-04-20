@@ -31,10 +31,9 @@ EduLedger is a comprehensive university management system that combines traditio
 
 1. Clone the repository:
 ```bash
-mkdir Eduledger
-cd EduLedger
+git clone https://github.com/yourusername/eduledger.git
+cd eduledger
 ```
-Then Clone it
 
 2. Install dependencies:
 ```bash
@@ -107,6 +106,24 @@ docker run -p 3000:3000 eduledger
 - CORS protection enabled
 - Input validation and sanitization
 
+## Contributing
+
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
+
 ## License
 
 This project is licensed under the MIT License - see the LICENSE file for details.
+
+## Contact
+
+For any queries or support, please contact the development team.
+
+## Acknowledgments
+
+- Express.js team for the amazing framework
+- SQLite team for the lightweight database solution
+- All contributors who have helped shape this project 
