@@ -1,33 +1,34 @@
-# EduLedger - University Management System
+# 📚EduLedger - University Management System
 
-EduLedger is a comprehensive university management system that combines traditional database management with blockchain technology for secure and transparent grade management. The system provides a robust platform for managing student records, grades, and academic information.
+EduLedger is a next-generation university management system that seamlessly integrates traditional database management with cutting-edge blockchain technology. Built for educational institutions seeking secure, transparent, and efficient academic record management.
 
-## Features
+## 🌟 Key Features
+### 📱 Academic Management
 
-- **Student Management**: Add, update, and manage student records
-- **Grade Management**: Secure grade recording using blockchain technology
-- **Subject Management**: Organize and manage academic subjects
-- **Admin Dashboard**: Comprehensive administrative controls
-- **Secure Authentication**: Protected admin access
-- **RESTful API**: Well-documented API endpoints for system integration
-- **Database Integration**: SQLite database for efficient data storage
-- **Blockchain Integration**: Secure and immutable grade records
+- **Student Information System:** Comprehensive student profile management
+- **Subject Catalog:** Dynamic course and subject organization
+- **Grade Analytics:** Real-time academic performance tracking
+- **Semester Management:** Multi-semester academic workflow support
 
-## Tech Stack
+### 🔐 Blockchain Integration
 
-- **Backend**: Node.js, Express.js
-- **Database**: SQLite3
-- **Blockchain**: Custom implementation
-- **Frontend**: HTML, CSS, JavaScript
-- **Containerization**: Docker support
+- **Immutable Grade Records:** Tamper-proof academic transcripts
+- **Transparent Verification:** Instant grade verification for stakeholders
+- **Decentralized Trust:** Elimination of academic fraud
+- **Audit Trail:** Complete history of all grade modifications
 
-## Prerequisites
+### 👨‍💼 Administrative Tools
 
-- Node.js (v14 or higher)
-- npm (Node Package Manager)
-- Docker (optional, for containerized deployment)
+- **Role-based Access Control:** Secure admin authentication
+- **Comprehensive Dashboard:** Real-time system analytics
+- **Bulk Operations:** Efficient mass data management
+- **Report Generation:** Automated academic reports
 
-## Installation
+## 🏗️ System Architecture
+
+![System Architecture.png](System%20Architecture.png)
+
+## ⬇️ Installation
 
 1. Clone the repository:
 ```bash
@@ -50,7 +51,9 @@ For development:
 npm run dev
 ```
 
-## Docker Deployment
+- Web Interface: http://localhost:3000
+
+## 🔃 Docker Deployment
 
 To run the application using Docker:
 
@@ -59,71 +62,41 @@ docker build -t eduledger .
 docker run -p 3000:3000 eduledger
 ```
 
-## API Endpoints
+## 🔑 API Endpoints
 
-### Student Management
-- `POST /api/students` - Add a new student
-- `GET /api/students` - Get all students
-- `GET /api/students/:id` - Get student by ID
-- `PUT /api/students/:id` - Update student information
-- `DELETE /api/students/:id` - Delete a student
+### 1. Student Management
+| Method |     Endpoint      | Description |
+|:------:|:-----------------:|:------------|
+|  POST  |   /api/students   | Add a new student|
+|  GET   |   /api/students   | Get all students|
+|  GET   | /api/students/:id | Get student by ID          |
+|  PUT   | /api/students/:id | Update student information |
+| DELETE | /api/students/:id | Delete a student  |
 
-### Grade Management
-- `POST /api/grades` - Add a new grade
-- `GET /api/grades/:studentId` - Get grades for a student
-- `GET /api/grades/blockchain` - View blockchain grade records
+### 2. Grade Management
+| Method |         Endpoint       | Description |
+|:------:|:----------------------:|:------------|
+| POST   |      /api/grades       | Add a new grade|
+|  GET   | /api/grades/:studentId | Get grades for a student|
+|  GET   | /api/grades/blockchain | View blockchain grade records|
 
-### Subject Management
-- `POST /api/subjects` - Add a new subject
-- `GET /api/subjects` - Get all subjects
-- `PUT /api/subjects/:id` - Update subject information
+### 3. Subject Management
+| Method |     Endpoint      | Description |
+|:------:|:-----------------:|:------------|
+| POST   |  /api/subjects    | Add a new subject|
+|  GET   |   /api/subjects   | Get all subjects|
+|  PUT   | /api/subjects/:id | Update subject information|
 
-## Database Schema
+## 🗄️ Database Schema
 
-### Students Table
-- id (INTEGER, PRIMARY KEY)
-- name (TEXT)
-- unique_id (TEXT, UNIQUE)
-- email (TEXT, UNIQUE)
+![img.png](img.png)
 
-### Subjects Table
-- id (INTEGER, PRIMARY KEY)
-- name (TEXT)
-- code (TEXT, UNIQUE)
-- credits (INTEGER)
-
-### Grades Table
-- id (INTEGER, PRIMARY KEY)
-- student_id (INTEGER)
-- subject_id (INTEGER)
-- grade (TEXT)
-- semester (TEXT)
-
-## Security
+## 🔐 Security
 
 - Admin authentication required for sensitive operations
 - Blockchain integration for immutable grade records
 - CORS protection enabled
 - Input validation and sanitization
 
-## Contributing
-
-1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
-
-## License
-
-This project is licensed under the MIT License - see the LICENSE file for details.
-
-## Contact
-
-For any queries or support, please contact the development team.
-
-## Acknowledgments
-
-- Express.js team for the amazing framework
-- SQLite team for the lightweight database solution
-- All contributors who have helped shape this project 
+## 📜 License
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
